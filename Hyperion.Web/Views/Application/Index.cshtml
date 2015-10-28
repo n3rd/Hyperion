@@ -1,0 +1,43 @@
+﻿@using Hyperion.SiteManagement
+
+@model IEnumerable<Site>
+
+@{
+    ViewBag.Title = "Applications";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div class="list-group">
+    @foreach (var site in @Model)
+    {
+        var isStarted = site.State == SiteState.Started;
+
+        <div class="list-group-item @(!isStarted ? "list-group-item-danger" :"")">
+            <div class="row">
+                <div class="col-md-8"><h4 class="list-group-item-heading"><a target="_blank" href="@site.Url">@site.Name <span class="glyphicon glyphicon-new-window"></span></a></h4></div>
+                <div class="col-md-4 text-right"><span class="label label-@(isStarted ? "success" : "danger")">@(isStarted ? "running" : "stopped")</span></div>
+            </div>
+            <div class="list-group-item-text row">
+                <div class="col-md-8">
+                    <ul class="list-unstyled">
+                        @foreach (var url in site.Urls)
+                        {
+                            <li><span class="glyphicon glyphicon-link"></span> <a target="_blank" href="@url">@url</a></li>
+                        }
+                    </ul>
+                </div>
+                <div class="col-md-4 text-right">
+                    <form method="post" action="@Url.Action("site-action")">
+                        <input type="hidden" name="site" value="@site.Name" />
+                        <div class="btn-group">
+                            <button type="submit" name="action" value="start" class="btn btn-default @(isStarted ? "disabled" :"")"><span class="glyphicon glyphicon-play"></span></button>
+                            <button type="submit" name="action" value="stop" class="btn btn-default @(site.IsCurrentSite || !isStarted ? "disabled" :"")"><span class="glyphicon glyphicon-stop"></span></button>
+                            <button type="submit" name="action" value="restart" class="btn btn-default @(!isStarted ? "disabled" :"")"><span class="glyphicon glyphicon glyphicon-repeat disabled"></span></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+</div>
